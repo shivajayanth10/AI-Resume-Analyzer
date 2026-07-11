@@ -215,7 +215,7 @@ def dashboard():
                 "Tailor your skills section for each role."
             ]           
 
-            recent_apps = applications[-3:]
+            recent_apps = list(applications[-3:])
             recent_apps.reverse()
             print("DASHBOARD AI:", latest_ai_analysis)
             ai_analysis = latest_ai_analysis if latest_ai_analysis else None
