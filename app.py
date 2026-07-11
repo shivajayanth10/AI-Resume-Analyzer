@@ -125,7 +125,7 @@ create_database()
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return redirect("/dashboard")
 
 
 @app.route("/register", methods=["GET", "POST"])
