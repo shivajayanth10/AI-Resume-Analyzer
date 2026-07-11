@@ -1,0 +1,985 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>AI Resume Analyzer</title>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        body{
+            background:#1f2329;
+            color:white;
+        }
+
+      .sidebar h2 {
+    margin: 12px 20px 0 20px;   
+    padding-bottom: 10px;
+    padding-right: 56px;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    letter-spacing: -0.5px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+       .sidebar{
+    height:100vh;
+    background:transparent;
+    padding-top: 12px;
+    padding-left: 0px;
+    padding-right: 0;
+    border-right:1px solid rgba(255,255,255,0.08);
+}
+
+        .sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    font-size: 18px;
+}
+.sidebar-heading {
+    color: #9ca3af;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+
+    margin: 20px 20px 10px 20px;
+    padding-bottom: 10px;
+    padding-left: 13px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+        .sidebar a:first-child {
+    margin-top: 0;
+}
+
+        .sidebar a:hover{
+    background:rgba(255,255,255,0.08);
+}
+
+        .card{
+            border:none;
+            border-radius:15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<div class="row">
+
+<!-- Sidebar -->
+
+<div class="col-md-2 sidebar">
+
+<h2 class="text-center mb-4">
+AI Resume Analyzer
+</h2>
+
+<a href="/dashboard">
+📊 Dashboard
+</a>
+
+
+<a href="/applications">
+    📄 Resume Upload
+</a>
+
+<a href="{{ url_for('skill_analysis') }}" class="nav-link">
+    🧠 Skill Analysis
+</a>
+
+<a href="/analytics">📈 Analytics</a>
+
+<div class="sidebar-heading">
+    AI TOOLS
+</div>
+
+<a href="/job_match">
+    🎯 ATS Analyzer
+</a>
+
+<a href="/resume_improvement">
+    ✨ Resume Improvement
+</a>
+
+<a href="/interview_questions">
+    💬 Interview Questions
+</a>
+
+<a href="/cover_letter">
+    📝 Cover Letter Generator
+</a>
+
+<a href="/job_recommendation">
+    💼 Job Recommendations
+</a>
+
+<a href="/resume_chatbot">
+    🤖 Resume Chatbot
+</a>
+
+<a href="/learning_roadmap">
+    🗺️ Learning Roadmap
+</a>
+
+<a href="/resume_summary">
+    📋 Resume Summary
+</a>
+
+<a href="/skill_gap">
+    🔍 Skill Gap Analyzer
+</a>
+
+<a href="/">
+    🚪 Logout
+</a>
+
+</div>
+
+
+<!-- Main Content -->
+
+<div class="col-md-10 p-5 dashboard-content">
+
+<div class="dashboard-welcome">
+    <h1> Welcome to <span>AI Resume Analyzer</span></h1>
+    <p>Track applications, analyze resumes and monitor your job search.</p>
+</div>
+<div class="row">
+<div class="col-md-4">
+    <div class="card bg-dark p-4 mb-4">
+
+    <h4 style="color:white;">
+        🤖 AI Resume Analysis
+    </h4>
+{% if ai_analysis and analyzed_filename %}
+<h4 class="text-white mb-3">
+
+    <h3>🤖 AI Analysis Result</h3>
+
+    <p><strong>File:</strong> {{ analyzed_filename }}</p>
+    <a href="/clear_analysis" class="btn btn-primary mb-3">
+    ← Back to Dashboard
+</a>
+
+    <div style="
+    white-space: pre-wrap;
+    color: white;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 10px;
+">
+    {{ ai_analysis }}
+</div>
+
+</div>
+
+{% else %}
+
+<div class="ai-analysis-box">
+
+    <h3>🤖 Analyze a Resume</h3>
+
+    <p>Upload a resume to see AI analysis here.</p>
+
+    <form id="resumeForm" action="/analyze_resume" method="POST" enctype="multipart/form-data">
+    
+
+        <div class="upload-section">
+            <input type="file" name="resume" required>
+        </div>
+
+        <button type="submit" id="analyzeBtn">
+    Analyze Resume
+</button>
+<p id="loadingText"
+   style="display:none; color:#4da6ff; margin-top:15px; font-weight:bold;">
+    Please wait while AI analyzes your resume...
+</p>
+</p>
+
+    </form>
+
+</div>
+
+{% endif %}
+
+</div>
+</div>   <!-- closes col-md-4 -->
+
+<div class="col-md-8">
+    <div class="card bg-dark p-4 mb-4 ">
+
+        
+        <div class="row">
+
+            <!-- RESUME READINESS -->
+            <div class="col-md-6 mb-3">
+
+                <div class="readiness-section">
+
+                    <h4 class="text-white mb-3">
+                        🎯 Profile Strength
+
+                    </h4>
+
+
+                    <div class="readiness-card">
+
+                        <span class="live-badge">
+                            <span class="live-dot"></span>
+                            LIVE
+                        </span>
+
+                        <div class="readiness-content">
+
+                            <div class="readiness-circle">
+
+                                <svg viewBox="0 0 200 200">
+
+                                    <defs>
+
+                                        <linearGradient id="orangeGradient"
+                                            x1="0%"
+                                            y1="0%"
+                                            x2="100%"
+                                            y2="100%">
+
+                                            <stop offset="0%" stop-color="#ff6b00"/>
+                                            <stop offset="45%" stop-color="#ff9d00"/>
+                                            <stop offset="75%" stop-color="#ffb800"/>
+                                            <stop offset="100%" stop-color="#ff4500"/>
+
+                                        </linearGradient>
+
+                                        <filter id="orangeGlow">
+
+                                            <feGaussianBlur
+                                                stdDeviation="4"
+                                                result="blur"/>
+
+                                            <feMerge>
+                                                <feMergeNode in="blur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+
+                                        </filter>
+
+                                    </defs>
+
+                                    <circle
+                                        class="readiness-circle-bg"
+                                        cx="100"
+                                        cy="100"
+                                        r="82">
+                                    </circle>
+
+                                    <circle
+                                        class="readiness-circle-progress"
+                                        cx="100"
+                                        cy="100"
+                                        r="82"
+                                        filter="url(#orangeGlow)">
+                                    </circle>
+
+                                </svg>
+
+                                <div class="readiness-score">
+                                    <span class="score-number">75</span>
+                                    <span class="score-percent">%</span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="readiness-details">
+
+                                <div class="readiness-item">
+                                    <span>Skills</span>
+                                    <strong>Strong</strong>
+                                </div>
+
+                                <div class="readiness-item">
+                                    <span>Projects</span>
+                                    <strong>Good</strong>
+                                </div>
+
+                                <div class="readiness-item">
+                                    <span>Experience</span>
+                                    <strong>Improve</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+             <!-- APPLICATION PROGRESS GRAPH -->
+
+<div class="col-md-6 mb-3">
+
+
+    <div class="progress-section">
+
+        <h4 class="progress-title">
+            📈 Application Progress
+        </h4>
+
+        <div class="progress-chart-card">
+
+            <div class="chart-header">
+                <span>Last 7 Days</span>
+
+                <span class="chart-trend">
+                    ↗ +12%
+                </span>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="applicationProgressChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<!-- Cards -->
+<div class="row mt-4">
+
+    <!-- Total Applications -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark border-secondary p-4 h-100 card-hover">
+            <div class="d-flex align-items-center mb-3">
+    <div class="bg-primary rounded p-2 me-3">
+        📁
+    </div>
+
+    <h5 class="text-white mb-0">
+        Total Applications
+    </h5>
+</div>
+
+            <h1 class="mt-3 text-white">
+                {{ applications|length }}
+            </h1>
+
+            <p class="text-secondary mb-0">
+                View all applications →
+            </p>
+        </div>
+    </div>
+
+    <!-- Interviews -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark border-secondary p-4 h-100 card-hover">
+            <div class="d-flex align-items-center mb-3">
+    <div class="bg-success rounded p-2 me-3">
+        👥
+    </div>
+
+    <h5 class="text-white mb-0">
+        Interviews
+    </h5>
+</div>
+            <h1 class="mt-3 text-white">
+                {{ interviews }}
+            </h1>
+
+            <p class="text-secondary mb-0">
+                View interview invites →
+            </p>
+        </div>
+    </div>
+
+    <!-- Offers -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark border-secondary p-4 h-100 card-hover">
+          <div class="d-flex align-items-center mb-3">
+    <div class="bg-warning rounded p-2 me-3">
+        ✉️
+    </div>
+
+    <h5 class="text-white mb-0">
+        Offers
+    </h5>
+</div>
+
+            <h1 class="mt-3 text-white">
+                {{ offers }}
+            </h1>
+
+            <p class="text-secondary mb-0">
+                View offers →
+            </p>
+        </div>
+    </div>
+
+    <!-- Rejected -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark border-secondary p-4 h-100 card-hover">
+            <<div class="d-flex align-items-center mb-3">
+    <div class="bg-danger rounded p-2 me-3">
+        ❌
+    </div>
+
+    <h5 class="text-white mb-0">
+        Rejected
+    </h5>
+</div>
+
+            <h1 class="mt-3 text-white">
+                {{ rejected }}
+            </h1>
+
+            <p class="text-secondary mb-0">
+                Don't give up! →
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<div class="mt-5">
+
+<div class="dashboard-card p-4 mt-4 w-100">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white mb-0">
+        📋 Job Applications
+    </h2>
+
+    <button class="btn btn-outline-primary">
+        View All →
+    </button>
+</div>
+
+<div class="mb-4">
+
+<a href="/dashboard" class="btn btn-secondary">
+All
+</a>
+
+<a href="/filter/Applied" class="btn btn-outline-primary">
+Applied
+</a>
+
+<a href="/filter/Interview" class="btn btn-outline-success">
+Interview
+</a>
+
+<a href="/filter/Offer" class="btn btn-outline-warning">
+Offer
+</a>
+
+<a href="/filter/Rejected" class="btn btn-outline-danger">
+Rejected
+</a>
+
+<div class="mt-3 mb-2">
+    <select class="form-select bg-dark text-white border-secondary w-auto">
+        <option>Sort: Newest First</option>
+        <option>Sort: Oldest First</option>
+    </select>
+</div>
+
+</div>
+<div class="mb-2">
+
+</div>
+<form action="/search" method="GET">
+
+
+<div class="row g-3 mb-4 align-items-center">
+
+    <div class="col-md-6">
+
+<input
+type="text"
+name="keyword"
+class="form-control"
+placeholder="🔍 Search company, role, or status...">
+
+</div>
+<div class="col-lg-2">
+    <button class="btn btn-primary w-100">
+        Search
+    </button>
+</div>
+
+<div class="col-md-2">
+    <a href="/dashboard" class="btn btn-secondary w-100">
+        Reset
+    </a>
+</div>
+
+</form>
+<table class="table table-dark table-striped">
+<div class="col-md-2">
+    <a href="/export" class="btn btn-success w-100">
+        Export CSV
+    </a>
+</div>
+
+</div>  <!-- End of row -->
+<thead>
+
+<tr>
+
+<th>Company</th>
+<th>Role</th>
+<th>Status</th>
+<th>Date Applied</th>
+<th>Resume Score</th>
+<th>Skill Match</th>
+<th>Resume File</th>
+<th>Actions</th>
+</div>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for app in applications %}
+
+<tr>
+
+<td>{{ app[1] }}</td>
+
+<td>{{ app[2] }}</td>
+
+<td>
+
+{% if app[3]=="Applied" %}
+
+<span class="badge bg-primary">
+Applied
+</span>
+
+{% elif app[3]=="Interview" %}
+
+<span class="badge bg-success">
+Interview
+</span>
+
+{% elif app[3]=="Rejected" %}
+
+<span class="badge bg-danger">
+Rejected
+</span>
+
+{% elif app[3]=="Offer" %}
+
+<span class="badge bg-warning text-dark">
+Offer
+</span>
+
+{% endif %}
+
+<td>{{ app[4] }}</td>
+
+<td>
+
+{% if app[5] %}
+
+    {% if app[5] >= 80 %}
+    <span class="badge bg-success">
+        {{ app[5] }} Excellent
+    </span>
+
+    {% elif app[5] >= 60 %}
+    <span class="badge bg-warning text-dark">
+        {{ app[5] }} Good
+    </span>
+
+    {% else %}
+    <span class="badge bg-danger">
+        {{ app[5] }} Needs Improvement
+    </span>
+    {% endif %}
+
+{% else %}
+
+<span class="badge bg-secondary">
+    No Score
+</span>
+
+{% endif %}
+</td>
+<td>
+    <span class="badge bg-blank">
+        {{ app[6] }}%
+    </span>
+</td>
+
+<td>
+    <a href="/uploads/{{ app[7] }}" target="_blank">
+        {{ app[7] }}
+    </a>
+</td>
+
+<td>
+    <a href="/edit/{{ app[0] }}"
+       class="btn btn-warning btn-sm">
+       Edit
+    </a>
+
+    <a href="/delete/{{ app[0] }}"
+       class="btn btn-danger btn-sm"
+       onclick="return confirm('Are you sure you want to delete this application?')">
+       Delete
+    </a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<br><br>
+
+
+<div class="col-md-6">
+
+<div class="card bg-dark p-4">
+
+<h5 class="text-center text-white mb-3">
+📊 Application Distribution
+</h5><div style="height:250px;">
+    
+    <canvas id="myChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-6">
+
+<div class="card bg-dark p-4">
+
+<h5 class="text-center text-white mb-3">
+📈 Status Comparison
+</h5>
+<div style="height:250px;">
+    <canvas id="barChart"></canvas>
+</div>
+
+</div>
+
+</div>
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="card bg-dark p-4">
+
+<h4 class="mb-4">
+📄 Resume Strength
+</h4>
+<h4 class="mb-4">
+📄 Resume Strength
+</h4>
+<h2 class="text-warning">
+70%
+</h2>
+
+<div class="progress" style="height:25px;">
+
+<div class="progress-bar bg-warning"
+     role="progressbar"
+     style="width:70%;">
+
+70%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="col-md-6">
+
+<div class="card bg-dark p-4">
+
+<h4 class="mb-4">
+🕒 Recent Applications
+</h4>
+
+<ul class="list-group">
+
+{% for app in recent_apps %}
+
+<li class="list-group-item bg-dark text-white">
+{{ app[1] }} — {{ app[2] }}
+</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+<br><br>
+<div class="row mt-4">
+
+    <div class="col-md-12">
+
+        <div class="card bg-dark p-4">
+
+            <h4 class="mb-4">
+                🤖 AI Insights
+            </h4>
+
+            <ul class="list-group">
+
+                <li class="list-group-item bg-dark text-white">
+                    Total Applications: {{ applications|length }}
+                </li>
+
+                <li class="list-group-item bg-dark text-white">
+                    Interviews: {{ interviews }}
+                </li>
+
+                <li class="list-group-item bg-dark text-white">
+                    Offers: {{ offers }}
+                </li>
+
+                <li class="list-group-item bg-dark text-white">
+                    Resume Strength: 70%
+                </li>
+                <li class="list-group-item bg-dark text-success">
+                {% if interviews == 0 %}
+                 Recommendation: Focus on improving your resume.
+{% elif offers > 0 %}
+Recommendation: Great progress! Continue applying.
+{% else %}
+Recommendation: You are getting interviews. Keep pushing.
+{% endif %}
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+var ctx = document.getElementById("myChart");
+
+if (ctx) {
+    new Chart(ctx, {
+
+    type: "pie",
+
+    data: {
+
+        labels: [
+            "Applied",
+            "Interview",
+            "Offer",
+            "Rejected"
+        ],
+
+        datasets: [{
+
+            data: [
+                Number("{{ applied }}"),
+                Number("{{ interviews }}"),
+                Number("{{ offers }}"),
+                Number("{{ rejected }}")
+            ],
+
+            backgroundColor: [
+                "#0d6efd",
+                "#198754",
+                "#ffc107",
+                "#dc3545"
+            ],
+
+            borderWidth: 2
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+
+                position: "right",
+
+                labels: {
+
+                    color: "white",
+
+                    boxWidth: 15,
+
+                    padding: 15,
+
+                    font: {
+
+                        size: 13
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    });
+}
+
+var barctx = document.getElementById('barChart');
+
+if (barctx) {
+    new Chart(barctx, {
+    type: 'bar',
+
+    data: {
+        labels: [
+            'Applied',
+            'Interview',
+            'Offer',
+            'Rejected'
+        ],
+
+        datasets: [{
+           label: 'Average Resume Score',
+
+data: [
+    Number("{{ avg_applied_score }}"),
+    Number("{{ avg_interview_score }}"),
+    Number("{{ avg_offer_score }}"),
+    Number("{{ avg_rejected_score }}")
+],
+            backgroundColor: [
+                '#0d6efd',
+                '#198754',
+                '#ffc107',
+                '#dc3545'
+            ]
+        }]
+    },
+
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.querySelector('form[action="/analyze_resume"]');
+    const button = document.getElementById("analyzeBtn");
+
+    form.addEventListener("submit", function () {
+
+        button.innerText = "⏳ Analyzing Resume...";
+        button.disabled = true;
+
+    });
+
+});
+const chartCanvas = document.getElementById("applicationProgressChart");
+
+if (chartCanvas) {
+
+    const ctx = chartCanvas.getContext("2d");
+
+    const gradient = ctx.createLinearGradient(0,0,0,180);
+
+    gradient.addColorStop(0,"rgba(255,157,0,0.35)");
+    gradient.addColorStop(1,"rgba(255,107,0,0.02)");
+
+    new Chart(ctx,{
+        type:"line",
+        data:{
+            labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+            datasets:[{
+                data:[2,4,3,6,5,8,10],
+                borderColor:"#ff9500",
+                backgroundColor:gradient,
+                fill:true,
+                tension:0.4,
+                borderWidth:3,
+                pointRadius:3,
+                pointBackgroundColor:"#ff9500",
+                pointBorderColor:"#fff",
+                pointBorderWidth:2
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{
+                legend:{
+                    display:false
+                }
+            }
+        }
+    });
+
+}
+</script>

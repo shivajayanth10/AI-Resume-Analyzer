@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body{
+            background-color:#23232d;
+            color:white;
+            font-family:Arial;
+            padding:40px;
+        }
+
+        h1{
+            margin-bottom:30px;
+        }
+
+        .chart-container{
+            width:600px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Application Analytics</h1>
+
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script>
+
+const ctx = document.getElementById('myChart');
+
+const values = [
+    Number("{{ applied }}"),
+    Number("{{ interview }}"),
+    Number("{{ offer }}"),
+    Number("{{ rejected }}")
+];
+
+new Chart(ctx, {
+    type: 'pie',
+
+    data: {
+        labels: ['Applied', 'Interview', 'Offer', 'Rejected'],
+
+        datasets: [{
+            data: values,
+
+            backgroundColor: [
+                '#0d6efd',
+                '#198754',
+                '#ffc107',
+                '#dc3545'
+            ]
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
