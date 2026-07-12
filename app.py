@@ -39,6 +39,8 @@ def clean_ai_response(text):
 
     return text.strip()
 app = Flask(__name__)
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 latest_skills = []
 latest_ai_analysis = ""
