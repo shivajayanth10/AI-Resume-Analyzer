@@ -195,45 +195,45 @@ def dashboard():
                 rejected_scores.append(app[5])
 
 
-            if applied_scores:
-                avg_applied_score = round(sum(applied_scores) / len(applied_scores))
+        if applied_scores:
+            avg_applied_score = round(sum(applied_scores) / len(applied_scores))
 
-            if interview_scores:
-                avg_interview_score = round(sum(interview_scores) / len(interview_scores))
+        if interview_scores:
+            avg_interview_score = round(sum(interview_scores) / len(interview_scores))
 
-            if offer_scores:
-                avg_offer_score = round(sum(offer_scores) / len(offer_scores))
+        if offer_scores:
+            avg_offer_score = round(sum(offer_scores) / len(offer_scores))
 
-            if rejected_scores:
-                avg_rejected_score = round(sum(rejected_scores) / len(rejected_scores))
-                
-            career_tips = [
-                "Customize your resume for every job application.",
-                "Keep your resume to one page as a fresher.",
-                "Add GitHub links to your projects.",
-                "Use action verbs like Developed, Built, and Implemented.",
-                "Tailor your skills section for each role."
-            ]           
+        if rejected_scores:
+            avg_rejected_score = round(sum(rejected_scores) / len(rejected_scores))
+            
+        career_tips = [
+            "Customize your resume for every job application.",
+            "Keep your resume to one page as a fresher.",
+            "Add GitHub links to your projects.",
+            "Use action verbs like Developed, Built, and Implemented.",
+            "Tailor your skills section for each role."
+        ]           
 
-            recent_apps = list(applications[-3:])
-            recent_apps.reverse()
-            print("DASHBOARD AI:", latest_ai_analysis)
-            ai_analysis = latest_ai_analysis if latest_ai_analysis else None
-            current_filename = analyzed_filename
-            return render_template(
-            "dashboard.html",
-            applications=applications,
-            applied=applied,
-            interviews=interviews,
-            offers=offers,
-            avg_applied_score=avg_applied_score,
-            avg_interview_score=avg_interview_score,
-            avg_offer_score=avg_offer_score,
-            avg_rejected_score=avg_rejected_score,
-            rejected=rejected,
-            recent_apps=recent_apps,
-            ai_analysis=ai_analysis,
-            analyzed_filename=current_filename
+        recent_apps = list(applications[-3:])
+        recent_apps.reverse()
+        print("DASHBOARD AI:", latest_ai_analysis)
+        ai_analysis = latest_ai_analysis if latest_ai_analysis else None
+        current_filename = analyzed_filename
+        return render_template(
+        "dashboard.html",
+        applications=applications,
+        applied=applied,
+        interviews=interviews,
+        offers=offers,
+        avg_applied_score=avg_applied_score,
+        avg_interview_score=avg_interview_score,
+        avg_offer_score=avg_offer_score,
+        avg_rejected_score=avg_rejected_score,
+        rejected=rejected,
+        recent_apps=recent_apps,
+        ai_analysis=ai_analysis,
+        analyzed_filename=current_filename
 )
 
 @app.route("/applications", methods=["GET", "POST"])
