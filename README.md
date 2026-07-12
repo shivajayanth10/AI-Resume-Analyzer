@@ -194,7 +194,7 @@ Never commit API keys or sensitive credentials to GitHub.
 
 ### 7. Run the Application
 
-    python app.py
+    py -3.13 app.py
 
 Open the application in your browser.
 
