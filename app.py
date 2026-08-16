@@ -4,7 +4,12 @@ import os
 import re
 import fitz
 import google.generativeai as genai
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 for m in genai.list_models():  print(m.name)
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
@@ -1013,5 +1018,95 @@ def skill_gap():
         "skill_gap.html",
         result=result
     )
+# ================= ENTERPRISE AI RESEARCH AGENT =================
+
+import json
+from datetime import datetime
+
+RESEARCH_DB = "research_knowledge.json"
+
+
+def save_research(data):
+    try:
+        with open(RESEARCH_DB, "r", encoding="utf-8") as f:
+            records = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        records = []
+
+    records.append(data)
+
+    with open(RESEARCH_DB, "w", encoding="utf-8") as f:
+        json.dump(records, f, indent=2, ensure_ascii=False)
+
+
+@app.route("/research", methods=["GET", "POST"])
+def research_agent():
+    result = None
+
+    if request.method == "POST":
+        question = request.form.get("question", "").strip()
+
+        if question:
+            prompt = f"""
+You are an Enterprise AI Research Agent.
+
+Conduct a structured research analysis for this research question:
+
+{question}
+
+Return the research in the following structure:
+
+1. Research Question
+2. Key Findings
+3. Sources
+   - Give at least 4 credible sources.
+   - For each source provide its title, organization/publication,
+     URL if known, and what evidence it contributes.
+4. Evidence Comparison
+   - Compare the major evidence from the sources.
+5. Finding Classification
+   - Classify findings as Strong Evidence, Moderate Evidence,
+     or Emerging/Uncertain.
+6. Contradictions
+   - Identify any conflicting claims or evidence.
+   - If there are no clear contradictions, explicitly say so.
+7. Conclusion
+   - Give a concise evidence-based conclusion.
+8. Traceability
+   - For every major finding, mention which source(s) support it.
+
+Be transparent when information is uncertain.
+Do not invent precise statistics or URLs.
+"""
+
+            response = model.generate_content(prompt)
+            result = clean_ai_response(response.text)
+
+            save_research({
+                "question": question,
+                "result": result,
+                "created_at": datetime.now().isoformat()
+            })
+
+    return render_template(
+        "research.html",
+        result=result
+    )
+
+
+@app.route("/research/history")
+def research_history():
+    try:
+        with open(RESEARCH_DB, "r", encoding="utf-8") as f:
+            records = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        records = []
+
+    return render_template(
+        "research_history.html",
+        records=records
+    )
+
+# ================= END RESEARCH AGENT =================
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise AI Research Agent</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1f2937;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .result {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            background: #111827;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background: #111827;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #2563eb;
+        }
+
+        a {
+            color: #60a5fa;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Enterprise AI Research Agent</h1>
+
+    <div class="subtitle">
+        Conduct structured enterprise research using AI.
+    </div>
+
+    <div class="card">
+
+        <h2>Research Question</h2>
+
+        <form method="POST">
+
+            <textarea
+                name="question"
+                placeholder="Example: How is AI transforming retail operations?"
+                required></textarea>
+
+            <button type="submit">
+                Start Research
+            </button>
+
+        </form>
+
+        <div class="features">
+            <div class="feature">Research Questions</div>
+            <div class="feature">Key Findings</div>
+            <div class="feature">Evidence Comparison</div>
+            <div class="feature">Finding Classification</div>
+            <div class="feature">Contradiction Detection</div>
+            <div class="feature">Traceability</div>
+        </div>
+
+    </div>
+
+    {% if result %}
+
+    <div class="card">
+
+        <h2>Research Results</h2>
+
+        <div class="result">{{ result }}</div>
+
+    </div>
+
+    {% endif %}
+
+    <div class="card">
+        <a href="/research/history">
+            View Research Knowledge Base
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
